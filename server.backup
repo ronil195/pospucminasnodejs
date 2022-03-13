@@ -1,0 +1,70 @@
+const express = require('express');
+const app = express();
+const ENDPOINT = '/api'
+
+const lista_produtos = {
+    produtos: [
+        { id: 1, descricao : "arroz", valor: 25.00, marca: 'tio joao' }
+    ]
+};
+
+
+app.use(express.urlencoded({extended: true}));
+
+
+app.use((req, res, next) => {
+    console.log(`${req.hostname} - ${req.url}`)
+    next();
+})
+
+
+app.get(ENDPOINT + "/produtos", (req, res, next) => {
+    res.status(200).json(lista_produtos);
+})
+
+
+app.get(ENDPOINT + "/produtos/:id", (req, res, next) => {
+
+    let id = parseInt(req.params.id);
+    let idx = lista_produtos.produtos.findIndex( (elem) =>  elem.id == id);
+
+    console.log("retorno idx: " + idx);
+
+    if (idx != -1) {
+        res.status(200).json(lista_produtos.produtos[idx]);
+    } else {
+        res.status(404).json({message: "item nao encontrado"})
+    }
+
+})
+
+
+app.get("/", (req, res, next) => {
+    res.send(`<h1>Recebi um GET</h1>
+    <form action="/" method="POST">
+    Nome: <input name="nome"> <br>
+    Senha: <input name="senha"> <br>
+    <input type="submit">
+    </form>`);
+})
+
+
+app.get('/api', (req, res, next) => {
+    res.send ("Ola aplicacaoes");
+
+})
+
+app.post("/", (req, res, next) => {
+    res.send (`<h1>Recebi um post - ${req.body.nome} - ${req.body.senha}`)
+})
+
+
+let porta = 3000;
+
+app.listen(porta, () => {
+    console.log ("Servidor no ar");
+})
+
+
+
+// falta fazer o post, o put, delete
